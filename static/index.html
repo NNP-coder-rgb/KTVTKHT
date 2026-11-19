@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hệ Thống Phân Loại Phản Hồi Sinh Viên Bằng AI | PTTKHT</title>
+  
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Bootstrap Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="header-top">
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+      <div>
+        <div class="d-flex align-items-center gap-2">
+          <i class="bi bi-robot fs-3 text-warning"></i>
+          <h1 class="h4 mb-0 fw-bold">EduFeedback AI &bull; Phân Loại Phản Hồi Sinh Viên</h1>
+          <span class="brand-badge ms-2">PTTKHT 2026</span>
+        </div>
+        <p class="small text-white-50 mb-0 mt-1">
+          Đề tài môn Phân Tích & Thiết Kế Hệ Thống &bull; Thành viên: <strong>Nguyễn Ngọc Phúc</strong> &amp; <strong>Hà Minh Diệu (C)</strong>
+        </p>
+      </div>
+
+      <!-- User Switcher for Grading / Demo -->
+      <div class="d-flex align-items-center gap-2 bg-white bg-opacity-10 p-2 rounded-3 border border-white border-opacity-25">
+        <label for="user-selector" class="small fw-semibold text-white mb-0 text-nowrap">
+          <i class="bi bi-person-badge"></i> Đổi tài khoản demo:
+        </label>
+        <select id="user-selector" class="form-select form-select-sm" style="min-width: 280px;"></select>
+        <span id="current-user-role-badge" class="badge bg-primary">Sinh viên</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Navigation Tabs -->
+  <nav class="nav-tabs-custom">
+    <button class="nav-link active" data-tab="submit">
+      <i class="bi bi-pencil-square"></i> Gửi Phản Hồi (Sinh Viên)
+    </button>
+    <button class="nav-link" data-tab="my-feedbacks">
+      <i class="bi bi-inbox-fill"></i> Hộp Thư Của Tôi
+    </button>
+    <button class="nav-link" data-tab="admin-inbox">
+      <i class="bi bi-shield-check"></i> Bàn Làm Việc BQL (Admin &amp; Duyệt AI)
+    </button>
+    <button class="nav-link" data-tab="dashboard">
+      <i class="bi bi-bar-chart-line-fill"></i> Thống Kê &amp; Báo Cáo
+    </button>
+    <button class="nav-link" data-tab="database-design">
+      <i class="bi bi-database-fill-gear"></i> Thiết Kế CSDL &amp; Kiến Trúc PTTKHT
+    </button>
+    <button class="nav-link" data-tab="retrain-logs">
+      <i class="bi bi-arrow-repeat"></i> Vòng Lặp Học Máy (AI Retrain)
+    </button>
+  </nav>
+
+  <!-- Main Body Content -->
+  <main class="main-content">
+
+    <!-- ==================================================================== -->
+    <!-- TAB 1: GỬI PHẢN HỒI (STUDENT SUBMIT) -->
+    <!-- ==================================================================== -->
+    <section id="tab-submit" class="tab-section">
+      <div class="row">
+        <div class="col-lg-7">
+          <div class="custom-card">
+            <h2 class="card-title-lg text-primary">
+              <i class="bi bi-envelope-paper-heart-fill"></i> Đóng Góp Ý Kiến &bull; Phản Hồi Cho Nhà Trường
+            </h2>
+            <p class="text-muted small">
+              Hệ thống sử dụng trí tuệ nhân tạo (NLP/LLM) để tự động phân tích và chuyển thẳng phản hồi của bạn đến phòng ban phụ trách trong thời gian sớm nhất.
+            </p>
+
+            <!-- Quick sample buttons -->
+            <div class="mb-3 p-3 bg-light rounded-3 border">
+              <span class="small fw-bold text-dark d-block mb-2">
+                <i class="bi bi-lightning-charge-fill text-warning"></i> Thử nghiệm nhanh với các mẫu thực tế:
+              </span>
+              <div class="d-flex flex-wrap gap-2">
+                <button type="button" class="btn btn-outline-primary btn-sm btn-quick-sample"
+                  data-sample-title="Phòng B102 hư máy lạnh và thầy giảng nhanh"
+                  data-sample-content="Thầy cô giảng nhanh quá, phòng B102 lại bị hư máy lạnh cả tuần nay không ai sửa, rất ngột ngạt và khó tiếp thu bài giảng.">
+                  <i class="bi bi-magic"></i> Mẫu Đa Nhãn: Giảng dạy + Cơ sở vật chất
+                </button>
+                <button type="button" class="btn btn-outline-success btn-sm btn-quick-sample"
+                  data-sample-title="Đăng ký môn học bị nghẽn mạng"
+                  data-sample-content="Sáng nay cổng ĐKMH mở lúc 9h thì bị nghẽn mạng liên tục, em không đăng ký được tín chỉ nào dù đã canh đúng giờ. Mong phòng đào tạo mở thêm lớp.">
+                  <i class="bi bi-magic"></i> Mẫu Học vụ (ĐKMH)
+                </button>
+                <button type="button" class="btn btn-outline-danger btn-sm btn-quick-sample"
+                  data-sample-title="Đơn xin gia hạn nộp học phí do hoàn cảnh"
+                  data-sample-content="Gia đình em ở quê đang gặp khó khăn do lũ lụt, mong nhà trường và phòng tài chính hỗ trợ gia hạn đóng học phí thêm 3 tuần.">
+                  <i class="bi bi-magic"></i> Mẫu Học phí
+                </button>
+                <button type="button" class="btn btn-outline-info btn-sm btn-quick-sample"
+                  data-sample-title="Khen ngợi giảng viên dạy rất nhiệt tình"
+                  data-sample-content="Thầy dạy môn PTTKHT giảng bài cực kỳ dễ hiểu, slide bài giảng chi tiết và giải đáp thắc mắc nhiệt tình. Em rất thích môn này!">
+                  <i class="bi bi-magic"></i> Mẫu Khen ngợi (Tích cực)
+                </button>
+              </div>
+            </div>
+
+            <form id="form-submit-feedback">
+              <div class="mb-3">
+                <label for="input-feedback-title" class="form-label fw-semibold">
+                  Tiêu đề phản hồi <span class="text-danger">*</span>
+                </label>
+                <input type="text" class="form-control" id="input-feedback-title" 
+                  placeholder="Ví dụ: Máy lạnh phòng B102 hỏng, thắc mắc đăng ký môn học..." required>
+              </div>
+
+              <div class="mb-3">
+                <label for="input-feedback-content" class="form-label fw-semibold">
+                  Nội dung chi tiết <span class="text-danger">*</span>
+                </label>
+                <textarea class="form-control" id="input-feedback-content" rows="5"
+                  placeholder="Mô tả cụ thể sự việc, địa điểm, thời gian, tên môn học hoặc phòng ban liên quan..." required></textarea>
+                <div class="form-text">
+                  <i class="bi bi-stars text-primary"></i> Hệ thống AI sẽ đọc câu văn và tự động phân loại danh mục &amp; cảm xúc theo thời gian thực.
+                </div>
+              </div>
+
+              <div class="row mb-3">
+                <div class="col-md-7">
+                  <label for="input-feedback-attachment" class="form-label small fw-semibold">
+                    Đính kèm liên kết ảnh minh chứng (nếu có):
+                  </label>
+                  <input type="url" class="form-control form-control-sm" id="input-feedback-attachment"
+                    placeholder="https://example.com/anh-minh-chung.jpg">
+                </div>
+                <div class="col-md-5 d-flex align-items-end">
+                  <div class="form-check form-switch pb-1">
+                    <input class="form-check-input" type="checkbox" id="input-feedback-anonymous">
+                    <label class="form-check-label small fw-semibold" for="input-feedback-anonymous">
+                      <i class="bi bi-incognito"></i> Gửi ở chế độ ẩn danh
+                    </label>
+                  </div>
+                </div>
+              </div>
+
+              <button type="submit" id="btn-submit-feedback" class="btn btn-primary btn-lg w-100 fw-bold shadow-sm">
+                <i class="bi bi-send-fill me-1"></i> Gửi Phản Hồi Ngay
+              </button>
+            </form>
+          </div>
+        </div>
+
+        <!-- Right: AI Live Preview Panel -->
+        <div class="col-lg-5">
+          <div class="custom-card sticky-top" style="top: 20px;">
+            <h3 class="card-title-lg text-dark">
+              <span class="ai-pulse-dot me-1"></span> AI Live Assistant (Mô-đun Phân Tích)
+            </h3>
+            <p class="small text-muted mb-3">
+              Mô hình NLP nhận diện tức thì ngữ nghĩa tiếng Việt, bóc tách đa nhãn (Multi-label) và đánh giá độ cấp bách.
+            </p>
+
+            <!-- Box Live Preview -->
+            <div id="live-ai-preview-box" class="ai-preview-panel" style="display: none;">
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <span class="fw-bold small text-primary">
+                  <i class="bi bi-cpu-fill"></i> Dự đoán danh mục (AI Predictions):
+                </span>
+                <div id="live-ai-sentiment-badge"></div>
+              </div>
+
+              <!-- Categories Container -->
+              <div id="live-ai-categories-container"></div>
+
+              <!-- Clause Evidence -->
+              <div id="live-ai-clause-evidence" class="mt-2" style="display: none;"></div>
+            </div>
+
+            <!-- Intro Info Box -->
+            <div class="p-3 bg-light rounded-3 mt-3 border">
+              <h6 class="fw-bold text-dark mb-2"><i class="bi bi-info-circle text-primary"></i> 6 Danh Mục Chuẩn Hóa:</h6>
+              <div class="d-flex flex-wrap gap-1 small">
+                <span class="badge bg-primary">Giảng dạy</span>
+                <span class="badge bg-warning text-dark">Cơ sở vật chất</span>
+                <span class="badge bg-success">Học vụ</span>
+                <span class="badge bg-danger">Học phí</span>
+                <span class="badge bg-purple text-white" style="background:#8b5cf6">Hoạt động sinh viên</span>
+                <span class="badge bg-secondary">Ý kiến khác</span>
+              </div>
+              <hr class="my-2">
+              <p class="small text-muted mb-0">
+                <strong>Điểm đặc biệt:</strong> Khác với các hệ thống đơn nhãn thông thường, EduFeedback AI có khả năng nhận biết nhiều ý kiến trong cùng một đoạn văn bản (Multi-label Classification) và tự động gán nhãn chính xác.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================================================================== -->
+    <!-- TAB 2: HỘP THƯ CỦA TÔI (MY FEEDBACKS) -->
+    <!-- ==================================================================== -->
+    <section id="tab-my-feedbacks" class="tab-section" style="display: none;">
+      <div class="custom-card">
+        <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+          <div>
+            <h2 class="card-title-lg text-primary mb-1">
+              <i class="bi bi-collection-fill"></i> Lịch Sử Phản Hồi Của Tôi
+            </h2>
+            <p class="text-muted small mb-0">
+              Theo dõi tiến độ xử lý và câu trả lời chính thức từ các phòng ban nhà trường.
+            </p>
+          </div>
+          <button class="btn btn-outline-primary btn-sm" onclick="loadMyFeedbacks()">
+            <i class="bi bi-arrow-clockwise"></i> Làm mới
+          </button>
+        </div>
+
+        <!-- List feedbacks container -->
+        <div id="my-feedbacks-container"></div>
+      </div>
+    </section>
+
+    <!-- ==================================================================== -->
+    <!-- TAB 3: BÀN LÀM VIỆC BQL (ADMIN MODERATION) -->
+    <!-- ==================================================================== -->
+    <section id="tab-admin-inbox" class="tab-section" style="display: none;">
+      <div class="custom-card">
+        <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+          <div>
+            <h2 class="card-title-lg text-danger mb-1">
+              <i class="bi bi-shield-shaded"></i> Bàn Làm Việc Tiếp Nhận &amp; Kiểm Duyệt AI
+            </h2>
+            <p class="text-muted small mb-0">
+              Xem xét gợi ý từ AI, phê duyệt nhãn hoặc điều chỉnh danh mục để cải thiện mô hình học máy.
+            </p>
+          </div>
+          <div>
+            <span class="badge bg-dark fs-6">
+              Tìm thấy: <span id="admin-feedback-count">0</span> phản hồi
+            </span>
+          </div>
+        </div>
+
+        <!-- Filters Bar -->
+        <div class="p-3 bg-light rounded-3 border mb-4">
+          <div class="row g-2 align-items-center">
+            <div class="col-md-3">
+              <label class="small fw-semibold text-muted">Lọc theo Danh mục:</label>
+              <select id="admin-filter-category" class="form-select form-select-sm"></select>
+            </div>
+            <div class="col-md-2">
+              <label class="small fw-semibold text-muted">Trạng thái xử lý:</label>
+              <select id="admin-filter-status" class="form-select form-select-sm">
+                <option value="">-- Tất cả --</option>
+                <option value="PENDING">Chờ tiếp nhận</option>
+                <option value="PROCESSING">Đang xử lý</option>
+                <option value="RESOLVED">Đã giải quyết</option>
+                <option value="REJECTED">Từ chối</option>
+              </select>
+            </div>
+            <div class="col-md-2">
+              <label class="small fw-semibold text-muted">Cảm xúc (Sentiment):</label>
+              <select id="admin-filter-sentiment" class="form-select form-select-sm">
+                <option value="">-- Tất cả --</option>
+                <option value="POSITIVE">Tích cực</option>
+                <option value="NEUTRAL">Trung tính</option>
+                <option value="NEGATIVE">Tiêu cực</option>
+              </select>
+            </div>
+            <div class="col-md-3">
+              <label class="small fw-semibold text-muted">Tìm kiếm tiêu đề/nội dung:</label>
+              <input type="text" id="admin-filter-search" class="form-control form-control-sm" placeholder="Nhập từ khóa...">
+            </div>
+            <div class="col-md-2 d-flex align-items-end">
+              <div class="form-check pb-1">
+                <input class="form-check-input" type="checkbox" id="admin-filter-urgent">
+                <label class="form-check-label small fw-bold text-danger" for="admin-filter-urgent">
+                  <i class="bi bi-fire"></i> Chỉ mục Khẩn cấp
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Feedbacks List for Admin -->
+        <div id="admin-feedbacks-container"></div>
+      </div>
+    </section>
+
+    <!-- ==================================================================== -->
+    <!-- TAB 4: THỐNG KÊ DASHBOARD (ANALYTICS) -->
+    <!-- ==================================================================== -->
+    <section id="tab-dashboard" class="tab-section" style="display: none;">
+      <!-- Stats Metrics Row -->
+      <div class="row g-3 mb-4">
+        <div class="col-md-2 col-6">
+          <div class="stat-box">
+            <div class="stat-icon bg-primary bg-opacity-10 text-primary">
+              <i class="bi bi-chat-left-dots-fill"></i>
+            </div>
+            <div>
+              <div id="stat-total-feedbacks" class="stat-val">0</div>
+              <div class="stat-label">Tổng phản hồi</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-2 col-6">
+          <div class="stat-box">
+            <div class="stat-icon bg-warning bg-opacity-10 text-warning">
+              <i class="bi bi-hourglass-split"></i>
+            </div>
+            <div>
+              <div id="stat-pending-feedbacks" class="stat-val">0</div>
+              <div class="stat-label">Chờ tiếp nhận</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-2 col-6">
+          <div class="stat-box">
+            <div class="stat-icon bg-info bg-opacity-10 text-info">
+              <i class="bi bi-gear-fill"></i>
+            </div>
+            <div>
+              <div id="stat-processing-feedbacks" class="stat-val">0</div>
+              <div class="stat-label">Đang xử lý</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-2 col-6">
+          <div class="stat-box">
+            <div class="stat-icon bg-success bg-opacity-10 text-success">
+              <i class="bi bi-check-circle-fill"></i>
+            </div>
+            <div>
+              <div id="stat-resolved-feedbacks" class="stat-val">0</div>
+              <div class="stat-label">Đã giải quyết</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-2 col-6">
+          <div class="stat-box">
+            <div class="stat-icon bg-danger bg-opacity-10 text-danger">
+              <i class="bi bi-exclamation-triangle-fill"></i>
+            </div>
+            <div>
+              <div id="stat-urgent-feedbacks" class="stat-val">0</div>
+              <div class="stat-label">Bức xúc/Khẩn cấp</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-2 col-6">
+          <div class="stat-box">
+            <div class="stat-icon bg-purple bg-opacity-10 text-purple" style="color: #8b5cf6;">
+              <i class="bi bi-bullseye"></i>
+            </div>
+            <div>
+              <div id="stat-ai-accuracy" class="stat-val">0%</div>
+              <div class="stat-label">Độ chính xác AI</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Charts Row -->
+      <div class="row">
+        <div class="col-lg-7 mb-4">
+          <div class="custom-card h-100">
+            <h3 class="card-title-lg text-dark">
+              <i class="bi bi-bar-chart-fill text-primary"></i> Phân Bố Phản Hồi Theo 6 Danh Mục
+            </h3>
+            <canvas id="chart-category-distribution" height="150"></canvas>
+          </div>
+        </div>
+
+        <div class="col-lg-5 mb-4">
+          <div class="custom-card h-100">
+            <h3 class="card-title-lg text-dark">
+              <i class="bi bi-pie-chart-fill text-success"></i> Tỷ Lệ Cảm Xúc (Sentiment Analysis)
+            </h3>
+            <canvas id="chart-sentiment-distribution" height="180"></canvas>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================================================================== -->
+    <!-- TAB 5: THIẾT KẾ CƠ SỞ DỮ LIỆU & KIẾN TRÚC PTTKHT -->
+    <!-- ==================================================================== -->
+    <section id="tab-database-design" class="tab-section" style="display: none;">
+      <div class="custom-card">
+        <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+          <div>
+            <h2 class="card-title-lg text-primary mb-1">
+              <i class="bi bi-diagram-3-fill"></i> Thiết Kế Cơ Sở Dữ Liệu Quan Hệ (RDBMS) Chuẩn Hóa
+            </h2>
+            <p class="text-muted small mb-0">
+              Được thiết kế theo đúng chuẩn môn Phân Tích &amp; Thiết Kế Hệ Thống, hỗ trợ Đa nhãn (Multi-label) và Tích hợp AI.
+            </p>
+          </div>
+          <div class="btn-group btn-group-sm">
+            <button class="btn btn-outline-secondary" onclick="copySqlDdl('sqlite')">
+              <i class="bi bi-clipboard"></i> Copy SQLite DDL
+            </button>
+            <button class="btn btn-outline-secondary" onclick="copySqlDdl('mysql')">
+              <i class="bi bi-clipboard"></i> Copy MySQL DDL
+            </button>
+            <button class="btn btn-outline-secondary" onclick="copySqlDdl('postgres')">
+              <i class="bi bi-clipboard"></i> Copy PostgreSQL DDL
+            </button>
+          </div>
+        </div>
+
+        <!-- Technical Highlights -->
+        <div class="row g-3 mb-4">
+          <div class="col-md-6">
+            <div class="p-3 bg-light rounded-3 border h-100">
+              <h6 class="fw-bold text-dark"><i class="bi bi-check2-circle text-success"></i> 1. Xử lý Đa nhãn (Multi-label Classification):</h6>
+              <p class="small text-muted mb-0">
+                Thay vì gán 1 danh mục duy nhất trong bảng <code>ai_classifications</code>, hệ thống sử dụng bảng liên kết trung gian <code>feedback_categories</code> (quan hệ N - N). Điều này cho phép một phản hồi vừa thuộc <strong>Giảng dạy</strong> vừa thuộc <strong>Cơ sở vật chất</strong> với từng độ tin cậy riêng biệt (VD: "Thầy cô giảng nhanh quá, phòng B102 lại bị hư máy lạnh").
+              </p>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="p-3 bg-light rounded-3 border h-100">
+              <h6 class="fw-bold text-dark"><i class="bi bi-heart-pulse text-danger"></i> 2. Phân tích Cảm xúc (Sentiment &amp; Urgency):</h6>
+              <p class="small text-muted mb-0">
+                Trường <code>sentiment_label</code> (POSITIVE, NEUTRAL, NEGATIVE) và cờ <code>is_urgent</code> trong bảng <code>ai_classifications</code> giúp bộ phận tiếp nhận lọc ra ngay những phản hồi bức xúc hoặc sự cố nguy cấp (hư máy lạnh diện rộng, nghẽn cổng thi, chập điện) để ưu tiên xử lý trước.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Interactive Tables & Columns List -->
+        <div id="erd-tables-container"></div>
+      </div>
+    </section>
+
+    <!-- ==================================================================== -->
+    <!-- TAB 6: VÒNG LẶP HUẤN LUYỆN AI (RETRAIN LOGS / ACTIVE LEARNING) -->
+    <!-- ==================================================================== -->
+    <section id="tab-retrain-logs" class="tab-section" style="display: none;">
+      <div class="custom-card">
+        <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+          <div>
+            <h2 class="card-title-lg text-success mb-1">
+              <i class="bi bi-arrow-repeat"></i> Vòng Lặp Học Máy &bull; AI Active Learning &amp; Retrain Logs
+            </h2>
+            <p class="text-muted small mb-0">
+              Ghi nhận mọi trường hợp Quản trị viên duyệt hoặc điều chỉnh nhãn để làm tập dữ liệu (Ground Truth) huấn luyện lại mô hình AI trong tương lai.
+            </p>
+          </div>
+          <button class="btn btn-outline-success btn-sm" onclick="loadRetrainLogs()">
+            <i class="bi bi-arrow-clockwise"></i> Làm mới danh sách
+          </button>
+        </div>
+
+        <div class="table-responsive">
+          <table class="table table-hover align-middle border">
+            <thead class="table-light">
+              <tr>
+                <th style="width: 70px;">Mã log</th>
+                <th>Đoạn văn bản phản hồi gốc</th>
+                <th>AI Dự đoán ban đầu</th>
+                <th>Quản trị viên chốt</th>
+                <th>Trạng thái</th>
+                <th>Thời gian</th>
+              </tr>
+            </thead>
+            <tbody id="retrain-logs-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ==================================================================== -->
+  <!-- MODAL: XỬ LÝ & PHẢN HỒI CHO SINH VIÊN (ADMIN MODAL) -->
+  <!-- ==================================================================== -->
+  <div id="modal-respond-container" class="modal-backdrop-custom">
+    <div class="modal-content-custom p-4">
+      <div class="d-flex justify-content-between align-items-center pb-2 mb-3 border-bottom">
+        <h5 class="fw-bold mb-0 text-primary">
+          <i class="bi bi-reply-fill"></i> Trả Lời &amp; Xử Lý Phản Hồi
+        </h5>
+        <button type="button" class="btn-close" onclick="closeRespondModal()"></button>
+      </div>
+
+      <input type="hidden" id="modal-respond-fb-id">
+
+      <div class="mb-3">
+        <label class="form-label small fw-semibold text-muted">Tiêu đề phản hồi:</label>
+        <div id="modal-respond-title" class="fw-bold text-dark"></div>
+      </div>
+
+      <div class="row g-2 mb-3">
+        <div class="col-md-6">
+          <label for="modal-respond-dept" class="form-label small fw-semibold">Phòng ban xử lý:</label>
+          <select id="modal-respond-dept" class="form-select form-select-sm">
+            <option value="Phòng Cơ sở vật chất">Phòng Cơ sở vật chất</option>
+            <option value="Phòng Đào tạo">Phòng Đào tạo</option>
+            <option value="Phòng Kế hoạch Tài chính">Phòng Kế hoạch Tài chính</option>
+            <option value="Khoa Công nghệ thông tin">Khoa Công nghệ thông tin</option>
+            <option value="Đoàn Thanh niên - Hội Sinh viên">Đoàn Thanh niên - Hội Sinh viên</option>
+            <option value="Ban Quản lý Dịch vụ Căn tin &amp; Nhà xe">Ban Quản lý Dịch vụ Căn tin &amp; Nhà xe</option>
+            <option value="Ban Giám Hiệu">Ban Giám Hiệu</option>
+          </select>
+        </div>
+        <div class="col-md-6">
+          <label for="modal-respond-status" class="form-label small fw-semibold">Cập nhật trạng thái:</label>
+          <select id="modal-respond-status" class="form-select form-select-sm">
+            <option value="PROCESSING">Đang xử lý (PROCESSING)</option>
+            <option value="RESOLVED" selected>Đã giải quyết (RESOLVED)</option>
+            <option value="REJECTED">Từ chối (REJECTED)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="mb-3">
+        <label for="modal-respond-content" class="form-label small fw-semibold">Nội dung giải đáp gửi sinh viên:</label>
+        <textarea id="modal-respond-content" class="form-control" rows="4"
+          placeholder="Nhập câu trả lời chính thức, phương án giải quyết hoặc tiến độ sửa chữa..."></textarea>
+      </div>
+
+      <div class="d-flex justify-content-end gap-2 pt-2 border-top">
+        <button type="button" class="btn btn-secondary btn-sm" onclick="closeRespondModal()">Hủy bỏ</button>
+        <button type="button" id="btn-send-response" class="btn btn-primary btn-sm fw-bold">
+          <i class="bi bi-send-fill me-1"></i> Gửi Câu Trả Lời
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================================================================== -->
+  <!-- MODAL: SỬA ĐỔI NHÃN DANH MỤC (OVERRIDE AI LABELS) -->
+  <!-- ==================================================================== -->
+  <div id="modal-override-container" class="modal-backdrop-custom">
+    <div class="modal-content-custom p-4">
+      <div class="d-flex justify-content-between align-items-center pb-2 mb-3 border-bottom">
+        <h5 class="fw-bold mb-0 text-warning">
+          <i class="bi bi-pencil-square"></i> Điều Chỉnh Nhãn Danh Mục (AI Override)
+        </h5>
+        <button type="button" class="btn-close" onclick="closeOverrideModal()"></button>
+      </div>
+
+      <input type="hidden" id="modal-override-fb-id">
+
+      <div class="mb-3">
+        <label class="form-label small fw-semibold text-muted">Nội dung sinh viên viết:</label>
+        <div id="modal-override-content" class="p-2 bg-light rounded small text-dark border"></div>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label small fw-semibold">Chọn lại các danh mục chính xác (hỗ trợ Đa nhãn):</label>
+        <div id="modal-override-checkboxes" class="p-3 bg-light rounded border"></div>
+      </div>
+
+      <div class="d-flex justify-content-end gap-2 pt-2 border-top">
+        <button type="button" class="btn btn-secondary btn-sm" onclick="closeOverrideModal()">Hủy</button>
+        <button type="button" id="btn-save-override" class="btn btn-warning btn-sm fw-bold">
+          <i class="bi bi-save-fill me-1"></i> Lưu &amp; Cập Nhật Dữ Liệu Huấn Luyện
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="/static/js/app.js"></script>
+</body>
+</html>

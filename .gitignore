@@ -1,0 +1,20 @@
+# Virtual Environments
+venv/
+.venv/
+env/
+
+# Python Cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# SQLite local database (tự động sinh ra khi chạy hệ thống)
+*.db
+*.sqlite3
+
+# OS / Editor files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
